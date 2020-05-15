@@ -9,10 +9,6 @@ const UserSchema = new Schema(
     description: { type: String }
   },
   {
-    university_name: { type: String },
-    isUni: { type: Number, default: 0 }
-  },
-  {
     timestamps: {
       createdAt: "created_at",
       updatedAt: "updated_at"
