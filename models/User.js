@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const UserSchema = new Schema(
   {
+    name: { type: String },
+    surname: { type: String },
     username: { type: String },
     hashedPassword: { type: String },
-    university: { type: String },
     description: { type: String }
   },
   {
