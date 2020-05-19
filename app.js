@@ -38,6 +38,27 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(
+  session({
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      ttl: 24 * 60 * 60 // 1 day
+    }),
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: true,
+    name: "unitalkies-ih", // configuracion del nombre de la cookie
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "none", // esta es la linea importante
+      secure: process.env.NODE_ENV === "production"
+    }
+  })
+);
+app.use((req, res, next) => {
+  app.locals.currentUser = req.session.currentUser;
+  next();
+});
 app.use("/auth", authRouter);
 
 // catch 404 and forward to error handler

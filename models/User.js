@@ -11,6 +11,7 @@ const UserSchema = new Schema(
     verified: {type: String, default: false},
   },
   {
+    isorganization: {type: Number, default: 0},
     OrganizationName: {type: String},
     OrganizationDescription: {type: String},
   },
