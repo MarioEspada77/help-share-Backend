@@ -7,7 +7,8 @@ const UserSchema = new Schema(
     surname: { type: String },
     username: { type: String },
     hashedPassword: { type: String },
-    description: { type: String }
+    description: { type: String },
+    verified: {type: String, default: false},
   },
   {
     OrganizationName: {type: String},
