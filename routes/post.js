@@ -62,7 +62,7 @@ router.get("/:postId/:username/like", async (req, res, next) => {
     const user = await User.find({ username });
     const like = await Post.findByIdAndUpdate(postId, {
       $push: { likes: user[0]._id }
-    }).populate("username");
+    }, { new: true }).populate("username");
     console.log(like);
     res.json(like);
   } catch (error) {
@@ -75,7 +75,7 @@ router.get("/:postId/:username/unlike", async (req, res, next) => {
     const user = await User.find({ username });
     const like = await Post.findByIdAndUpdate(postId, {
       $pull: { likes: user[0]._id }
-    }).populate("username");
+    },{ new: true }).populate("username");
     res.json(like);
   } catch (error) {
     next(error);
