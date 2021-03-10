@@ -13,12 +13,12 @@ mongoose.set("useCreateIndex", true);
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   })
   .then(() => {
     console.log("connected to: ", process.env.MONGO_URL);
   })
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
   });
 
@@ -26,6 +26,7 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const postRouter = require("./routes/post");
 const followRouter = require("./routes/follow");
+const notificationRouter = require("./routes/notification");
 const app = express();
 
 app.set("trust proxy", true);
@@ -46,7 +47,7 @@ app.use(
   session({
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
-      ttl: 24 * 60 * 60 // 1 day
+      ttl: 24 * 60 * 60, // 1 day
     }),
     secret: process.env.SECRET,
     resave: true,
@@ -54,9 +55,9 @@ app.use(
     name: "unitalkies-ih", // configuracion del nombre de la cookie
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "none", // esta es la linea importante
-      secure: process.env.NODE_ENV === "production"
-    }
+      sameSite: "lax", // esta es la linea importante
+      secure: process.env.NODE_ENV === "production",
+    },
   })
 );
 app.use((req, res, next) => {
@@ -67,14 +68,15 @@ app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/post", postRouter);
 app.use("/follow", followRouter);
+app.use("/notifications", notificationRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};

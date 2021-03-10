@@ -16,11 +16,11 @@ router.post("/:username/new", async (req, res, next) => {
       username: user[0]._id,
       text,
       formUni: university,
-      commented_to: post_id
+      commented_to: post_id,
     });
     res.json({
       status: 200,
-      post
+      post,
     });
   } catch (error) {
     next(error);
@@ -30,23 +30,25 @@ router.get("/detail/:postId", async (req, res, next) => {
   const { postId } = req.params;
   try {
     const postDetail = await Post.findById(postId).populate("username");
-    const postComments = await Post.find({commented_to: postId }).populate("username").sort("-created_at");;
-    res.json({postDetail, postComments});
+    const postComments = await Post.find({ commented_to: postId })
+      .populate("username")
+      .sort("-created_at");
+    res.json({ postDetail, postComments });
   } catch (error) {
     console.log(error);
   }
 });
 router.get("/all", async (req, res, next) => {
   const username = req.session.currentUser;
-  console.log(username);
+  console.log("USER", username);
   try {
     const followsId = await Follow.find(
       { follower: username._id },
       "followed -_id"
     );
-    const arr = followsId.map(elem => elem.followed);
+    const arr = followsId.map((elem) => elem.followed);
     const post = await Post.find({
-      $or: [{ username: arr }, { formUni: arr }, { username: username._id }]
+      $or: [{ username: arr }, { formUni: arr }, { username: username._id }],
     })
       .populate("username")
       .populate("formUni")
@@ -60,9 +62,13 @@ router.get("/:postId/:username/like", async (req, res, next) => {
   const { postId, username } = req.params;
   try {
     const user = await User.find({ username });
-    const like = await Post.findByIdAndUpdate(postId, {
-      $push: { likes: user[0]._id }
-    }, { new: true }).populate("username");
+    const like = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $push: { likes: user[0]._id },
+      },
+      { new: true }
+    ).populate("username");
     console.log(like);
     res.json(like);
   } catch (error) {
@@ -73,9 +79,13 @@ router.get("/:postId/:username/unlike", async (req, res, next) => {
   const { postId, username } = req.params;
   try {
     const user = await User.find({ username });
-    const like = await Post.findByIdAndUpdate(postId, {
-      $pull: { likes: user[0]._id }
-    },{ new: true }).populate("username");
+    const like = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $pull: { likes: user[0]._id },
+      },
+      { new: true }
+    ).populate("username");
     res.json(like);
   } catch (error) {
     next(error);
